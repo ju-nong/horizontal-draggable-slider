@@ -20,7 +20,7 @@
                     <button
                         v-for="(_, index) in arr"
                         :key="index"
-                        :class="[{ active: $slider.nowIndex === index }]"
+                        :class="[{ active: $slider?.nowIndex === index }]"
                         @click="handleMove(index)"
                     ></button>
                 </div>

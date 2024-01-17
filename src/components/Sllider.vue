@@ -1,5 +1,4 @@
 <template>
-    <!-- :style="`--size: ${list.length};`" -->
     <div class="slider" ref="$slider">
         <div class="slider-container">
             <slot />
@@ -11,19 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs, defineExpose, ref, computed } from "vue";
-
-const props = defineProps({
-    list: {
-        default: [],
-        type: Array,
-        required: true,
-    },
-    button: {
-        default: false,
-        type: Boolean,
-    },
-});
+import { defineExpose, ref, computed } from "vue";
 
 const $slider = ref<HTMLDivElement | null>(null);
 const $container = computed<HTMLDivElement | null>(() => {
@@ -114,8 +101,6 @@ function onMove(index: number) {
         behavior: "smooth",
     });
 }
-
-const { list } = props;
 
 defineExpose({ onPrev, onNext, onMove, nowIndex });
 </script>
