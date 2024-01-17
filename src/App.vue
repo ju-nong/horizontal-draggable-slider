@@ -14,6 +14,17 @@
                     NEXT
                 </button>
             </template>
+
+            <template #pagination>
+                <div class="pagination">
+                    <button
+                        v-for="(_, index) in arr"
+                        :key="index"
+                        :class="[{ active: $slider.nowIndex === index }]"
+                        @click="handleMove(index)"
+                    ></button>
+                </div>
+            </template>
         </Sllider>
     </div>
 </template>
@@ -33,13 +44,15 @@ function handlePrev() {
 function handleNext() {
     $slider.value.onNext();
 }
+
+function handleMove(index: number) {
+    $slider.value.onMove(index);
+}
 </script>
 
 <style scoped>
-div {
-    > h1 {
-        padding: 8px 16px;
-    }
+h1 {
+    padding: 8px 16px;
 }
 
 .item {
@@ -78,6 +91,32 @@ div {
 
     &.next {
         right: 5px;
+    }
+}
+
+.pagination {
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+
+    transform: translateX(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 10px;
+
+    > button {
+        width: 8px;
+        height: 8px;
+        background-color: #fff;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 100%;
+
+        &.active {
+            background-color: #663399;
+        }
     }
 }
 </style>

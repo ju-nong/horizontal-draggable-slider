@@ -44,8 +44,9 @@ const itemWidth = computed(() =>
     $container.value ? $container.value.scrollWidth / itemLength.value : 0,
 );
 
-const $debouncing = ref<null | number>(null);
+const nowIndex = ref(0);
 
+const $debouncing = ref<null | number>(null);
 function setDebouncing() {
     $debouncing.value = setTimeout(() => {
         $debouncing.value = null;
@@ -67,6 +68,7 @@ function onPrev() {
         return;
     }
 
+    nowIndex.value = nowIndex.value - 1;
     setDebouncing();
 
     $container.value?.scrollBy({ left: -itemWidth.value, behavior: "smooth" });
@@ -88,6 +90,7 @@ function onNext() {
         return;
     }
 
+    nowIndex.value = nowIndex.value + 1;
     setDebouncing();
 
     $container.value?.scrollBy({ left: itemWidth.value, behavior: "smooth" });
@@ -103,6 +106,7 @@ function onMove(index: number) {
         return;
     }
 
+    nowIndex.value = index;
     setDebouncing();
 
     $container.value.scrollTo({
@@ -113,7 +117,7 @@ function onMove(index: number) {
 
 const { list } = props;
 
-defineExpose({ onPrev, onNext, onMove });
+defineExpose({ onPrev, onNext, onMove, nowIndex });
 </script>
 
 <style>
