@@ -1,45 +1,93 @@
 <template>
-    <div class="container" :style="`--size: ${arr.length};`">
-        <div v-for="item in arr" :key="item">
-            {{ item }}
+    <!-- :style="`--size: ${list.length};`" -->
+    <div class="slider" ref="$slider">
+        <div class="slider-content">
+            <slot />
         </div>
+
+        <slot name="button"></slot>
     </div>
 </template>
 
 <script setup lang="ts">
-const arr = [1, 2, 3, 4, 5];
+import { toRefs, defineExpose, ref, computed } from "vue";
+
+const props = defineProps({
+    list: {
+        default: [],
+        type: Array,
+        required: true,
+    },
+    button: {
+        default: false,
+        type: Boolean,
+    },
+});
+
+const $slider = ref<HTMLDivElement | null>(null);
+const $content = computed<HTMLDivElement | null>(() => {
+    if ($slider.value) {
+        const $content = $slider.value.querySelector(
+            ".slider-content",
+        ) as HTMLDivElement;
+
+        return $content || null;
+    }
+
+    return null;
+});
+const contentLength = computed(() =>
+    $content.value ? $content.value.children.length : 0,
+);
+const itemWidth = computed(() =>
+    $content.value ? $content.value.scrollWidth / contentLength.value : 0,
+);
+
+function onPrev() {
+    if (!$content.value) {
+        return;
+    }
+
+    // 왼쪽 끝일 때
+    if ($content.value.scrollLeft === 0) {
+        return;
+    }
+
+    $content.value?.scrollBy({ left: -itemWidth.value, behavior: "smooth" });
+}
+
+function onNext() {
+    if (!$content.value) {
+        return;
+    }
+
+    // 오른쪽 끝일 때
+    const { scrollLeft, scrollWidth } = $content.value;
+    if (scrollLeft === scrollWidth) {
+        return;
+    }
+
+    $content.value?.scrollBy({ left: itemWidth.value, behavior: "smooth" });
+}
+
+const { list } = props;
+
+defineExpose({ onPrev, onNext });
 </script>
 
-<style scoped>
-.container {
-    text-align: left;
+<style>
+.slider {
     width: 100%;
     height: 250px;
-    overflow-x: scroll;
-    display: flex;
-    box-sizing: border-box;
     border: 1px solid #000;
-    scroll-snap-type: x mandatory;
+    position: relative;
 
-    > div {
-        flex: 0 0 100%;
+    .slider-content {
         width: 100%;
-        background-color: #663399;
-        color: #fff;
-        font-size: 30px;
+        height: 100%;
+        overflow-x: scroll;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        scroll-snap-align: start;
-
-        text-align: center;
-        font-size: 22px;
-        font-weight: bold;
-
-        &:nth-child(2n) {
-            background-color: #fff;
-            color: #663399;
-        }
+        scroll-snap-type: x mandatory;
     }
 }
 </style>
