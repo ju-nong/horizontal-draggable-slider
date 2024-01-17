@@ -1,7 +1,7 @@
 <template>
     <!-- :style="`--size: ${list.length};`" -->
     <div class="slider" ref="$slider">
-        <div class="slider-content">
+        <div class="slider-container">
             <slot />
         </div>
 
@@ -25,49 +25,49 @@ const props = defineProps({
 });
 
 const $slider = ref<HTMLDivElement | null>(null);
-const $content = computed<HTMLDivElement | null>(() => {
+const $container = computed<HTMLDivElement | null>(() => {
     if ($slider.value) {
-        const $content = $slider.value.querySelector(
-            ".slider-content",
+        const $container = $slider.value.querySelector(
+            ".slider-container",
         ) as HTMLDivElement;
 
-        return $content || null;
+        return $container || null;
     }
 
     return null;
 });
-const contentLength = computed(() =>
-    $content.value ? $content.value.children.length : 0,
+const itemLength = computed(() =>
+    $container.value ? $container.value.children.length : 0,
 );
 const itemWidth = computed(() =>
-    $content.value ? $content.value.scrollWidth / contentLength.value : 0,
+    $container.value ? $container.value.scrollWidth / itemLength.value : 0,
 );
 
 function onPrev() {
-    if (!$content.value) {
+    if (!$container.value) {
         return;
     }
 
     // 왼쪽 끝일 때
-    if ($content.value.scrollLeft === 0) {
+    if ($container.value.scrollLeft === 0) {
         return;
     }
 
-    $content.value?.scrollBy({ left: -itemWidth.value, behavior: "smooth" });
+    $container.value?.scrollBy({ left: -itemWidth.value, behavior: "smooth" });
 }
 
 function onNext() {
-    if (!$content.value) {
+    if (!$container.value) {
         return;
     }
 
     // 오른쪽 끝일 때
-    const { scrollLeft, scrollWidth } = $content.value;
+    const { scrollLeft, scrollWidth } = $container.value;
     if (scrollLeft === scrollWidth) {
         return;
     }
 
-    $content.value?.scrollBy({ left: itemWidth.value, behavior: "smooth" });
+    $container.value?.scrollBy({ left: itemWidth.value, behavior: "smooth" });
 }
 
 const { list } = props;
@@ -82,7 +82,7 @@ defineExpose({ onPrev, onNext });
     border: 1px solid #000;
     position: relative;
 
-    .slider-content {
+    .slider-container {
         width: 100%;
         height: 100%;
         overflow-x: scroll;
