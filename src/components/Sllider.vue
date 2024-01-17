@@ -6,6 +6,7 @@
         </div>
 
         <slot name="button"></slot>
+        <slot name="pagination"></slot>
     </div>
 </template>
 
@@ -43,6 +44,14 @@ const itemWidth = computed(() =>
     $container.value ? $container.value.scrollWidth / itemLength.value : 0,
 );
 
+const $debouncing = ref<null | number>(null);
+
+function setDebouncing() {
+    $debouncing.value = setTimeout(() => {
+        $debouncing.value = null;
+    }, 500);
+}
+
 function onPrev() {
     if (!$container.value) {
         return;
@@ -52,6 +61,13 @@ function onPrev() {
     if ($container.value.scrollLeft === 0) {
         return;
     }
+
+    // 이동 중일 때
+    if ($debouncing.value !== null) {
+        return;
+    }
+
+    setDebouncing();
 
     $container.value?.scrollBy({ left: -itemWidth.value, behavior: "smooth" });
 }
@@ -67,12 +83,37 @@ function onNext() {
         return;
     }
 
+    // 이동 중일 때
+    if ($debouncing.value !== null) {
+        return;
+    }
+
+    setDebouncing();
+
     $container.value?.scrollBy({ left: itemWidth.value, behavior: "smooth" });
+}
+
+function onMove(index: number) {
+    if (!$container.value) {
+        return;
+    }
+
+    // 이동 중일 때
+    if ($debouncing.value !== null) {
+        return;
+    }
+
+    setDebouncing();
+
+    $container.value.scrollTo({
+        left: itemWidth.value * index,
+        behavior: "smooth",
+    });
 }
 
 const { list } = props;
 
-defineExpose({ onPrev, onNext });
+defineExpose({ onPrev, onNext, onMove });
 </script>
 
 <style>
@@ -85,9 +126,10 @@ defineExpose({ onPrev, onNext });
     .slider-container {
         width: 100%;
         height: 100%;
-        overflow-x: scroll;
         display: flex;
-        scroll-snap-type: x mandatory;
+        /* overflow-x: scroll;
+        scroll-snap-type: x mandatory; */
+        overflow-x: hidden;
     }
 }
 </style>
