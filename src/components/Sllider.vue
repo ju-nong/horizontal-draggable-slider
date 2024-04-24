@@ -1,5 +1,5 @@
 <template>
-    <div class="slider" ref="$slider">
+    <div class="slider" ref="$slider" :key="test">
         <div class="slider-container">
             <slot />
         </div>
@@ -10,7 +10,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineExpose, ref, computed } from "vue";
+import { defineExpose, ref, computed, nextTick } from "vue";
+
+const test = ref(0);
 
 const $slider = ref<HTMLDivElement | null>(null);
 const $container = computed<HTMLDivElement | null>(() => {
@@ -103,6 +105,15 @@ function onMove(index: number) {
 }
 
 defineExpose({ onPrev, onNext, onMove, nowIndex });
+
+// window.addEventListener("resize", async function () {
+//     // test.value = test.value + 1;
+//     console.log(itemWidth.value);
+//     if ($slider.value) {
+//         await nextTick();
+//         $slider.value.scrollLeft = itemWidth.value * nowIndex.value;
+//     }
+// });
 </script>
 
 <style>
